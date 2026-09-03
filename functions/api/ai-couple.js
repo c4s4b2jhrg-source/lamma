@@ -1,3 +1,4 @@
+// Redeploy marker: Workers AI binding enabled
 export async function onRequestPost(context){
   try{
     if(!context.env.AI){
