@@ -17,13 +17,39 @@ export async function onRequestPost(context){
       return json({error:'حجم الصورة كبير. اختر صورة أصغر.'},400);
     }
 
+    const styleHint={
+      'واقعي دافئ':'realistic professional childhood photography, warm natural light, soft elegant background',
+      'طفولي ناعم':'soft dreamy childhood portrait, pastel tones, innocent warm mood',
+      'سينمائي فاخر':'cinematic high-end childhood portrait, elegant lighting, premium film look',
+      'رسوم كرتونية لطيفة':'cute polished cartoon illustration, soft clean shapes, charming expressions'
+    }[style]||style;
+
     const form=new FormData();
-    form.append('prompt',`Create one tasteful childhood memory portrait combining the two children from the two reference photos into one natural scene. Keep each child's recognizable facial identity and age appearance as faithfully as possible. They should look naturally photographed together, with realistic proportions, matching lighting, coherent camera angle, warm elegant Gulf family-memory aesthetic. Style: ${style}. No text, no logos, no watermark, no extra people, no duplicated faces, no deformed hands.`);
+    form.append('prompt',`Create ONE polished childhood portrait using BOTH uploaded reference photos. Preserve each child's recognizable facial identity, hairstyle, approximate age and key facial features as faithfully as possible, but create a fresh full-body or three-quarter composition rather than copying the original pose.
+
+IMPORTANT COMPOSITION:
+- Put the two children naturally together in the same scene, close to each other.
+- Prefer a sweet, innocent interaction: gently holding hands, sitting side-by-side with hands touching, or standing shoulder-to-shoulder.
+- Make the pose feel natural, affectionate and age-appropriate, never stiff or awkward.
+
+IMPORTANT CLOTHING:
+- BOTH children must be fully dressed in neat, modest, age-appropriate elegant clothes.
+- The boy should wear a complete outfit such as a white shirt with trousers, suspenders and/or a bow tie; NEVER shirtless or bare-chested.
+- The girl should wear a tasteful modest dress or coordinated children's outfit.
+- Clothing should look premium, clean and suitable for a Gulf wedding-memory invitation.
+
+VISUAL STYLE:
+- ${styleHint}.
+- Warm elegant Gulf family-memory aesthetic.
+- Matching lighting, camera angle, realistic proportions and coherent background.
+- Natural skin, clean hands, believable anatomy, gentle expressions.
+
+STRICTLY AVOID: shirtless child, bare chest, revealing clothes, awkward pose, extra fingers, extra hands, duplicated people, extra people, distorted faces, deformed anatomy, cropped heads, scary expressions, text, logos, watermarks.`);
     form.append('input_image_0',image1,image1.name||'child1.jpg');
     form.append('input_image_1',image2,image2.name||'child2.jpg');
     form.append('width','1024');
     form.append('height','1024');
-    form.append('guidance','4');
+    form.append('guidance','5');
 
     const serialized=new Response(form);
     const result=await context.env.AI.run('@cf/black-forest-labs/flux-2-klein-4b',{
