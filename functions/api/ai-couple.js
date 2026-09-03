@@ -1,1 +1,68 @@
-export async function onRequestPost(context){try{const key=context.env.OPENAI_API_KEY;if(!key)return json({error:'ميزة AI جاهزة، باقي تفعيل مفتاح الخدمة من إعدادات Cloudflare.'},503);const form=await context.request.formData();const image1=form.get('image1'),image2=form.get('image2'),style=String(form.get('style')||'واقعي دافئ');if(!(image1 instanceof File)||!(image2 instanceof File))return json({error:'ارفع الصورتين أول.'},400);if(image1.size>10*1024*1024||image2.size>10*1024*1024)return json({error:'حجم الصورة كبير. اختر صورة أقل من 10MB.'},400);const fd=new FormData();fd.append('model','gpt-image-1');fd.append('image[]',image1,image1.name||'photo1.jpg');fd.append('image[]',image2,image2.name||'photo2.jpg');fd.append('prompt',`Create one warm, tasteful childhood memory portrait using both uploaded photos as identity references. Place both people naturally together in one harmonious scene, preserve recognizable facial features, matching age appearance, lighting, camera angle and proportions. Style: ${style}. Premium Gulf wedding invitation aesthetic, elegant soft background, no text, no logos, no watermark.`);fd.append('size','1024x1024');fd.append('quality','medium');fd.append('input_fidelity','high');const r=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:`Bearer ${key}`},body:fd});const data=await r.json();if(!r.ok)return json({error:data&&data.error&&data.error.message?data.error.message:'تعذر توليد الصورة من خدمة الذكاء الاصطناعي.'},r.status);const b64=data&&data.data&&data.data[0]&&data.data[0].b64_json;if(!b64)return json({error:'ما رجعت صورة من خدمة الذكاء الاصطناعي.'},502);return json({image:b64});}catch(e){return json({error:'صار خطأ أثناء توليد الصورة. جرّب مرة ثانية.'},500)}}function json(body,status=200){return new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})}
+export async function onRequestPost(context){
+  try{
+    if(!context.env.AI){
+      return json({error:'ميزة AI جاهزة. باقي ربط Workers AI بالمشروع باسم AI.'},503);
+    }
+
+    const incoming=await context.request.formData();
+    const image1=incoming.get('image1');
+    const image2=incoming.get('image2');
+    const style=String(incoming.get('style')||'واقعي دافئ');
+
+    if(!(image1 instanceof File)||!(image2 instanceof File)){
+      return json({error:'ارفع الصورتين أول.'},400);
+    }
+    if(image1.size>8*1024*1024||image2.size>8*1024*1024){
+      return json({error:'حجم الصورة كبير. اختر صورة أصغر.'},400);
+    }
+
+    const form=new FormData();
+    form.append('prompt',`Create one tasteful childhood memory portrait combining the two children from the two reference photos into one natural scene. Keep each child's recognizable facial identity and age appearance as faithfully as possible. They should look naturally photographed together, with realistic proportions, matching lighting, coherent camera angle, warm elegant Gulf family-memory aesthetic. Style: ${style}. No text, no logos, no watermark, no extra people, no duplicated faces, no deformed hands.`);
+    form.append('input_image_0',image1,image1.name||'child1.jpg');
+    form.append('input_image_1',image2,image2.name||'child2.jpg');
+    form.append('width','1024');
+    form.append('height','1024');
+    form.append('guidance','4');
+
+    const serialized=new Response(form);
+    const result=await context.env.AI.run('@cf/black-forest-labs/flux-2-klein-4b',{
+      multipart:{
+        body:serialized.body,
+        contentType:serialized.headers.get('content-type')
+      }
+    });
+
+    let b64='';
+    if(result&&typeof result.image==='string')b64=result.image;
+    else if(result instanceof ReadableStream){
+      const bytes=new Uint8Array(await new Response(result).arrayBuffer());
+      b64=bytesToBase64(bytes);
+    }
+
+    if(!b64)return json({error:'ما رجعت صورة من خدمة الذكاء الاصطناعي.'},502);
+    return json({image:b64,provider:'cloudflare',model:'flux-2-klein-4b'});
+  }catch(e){
+    const msg=String(e&&e.message||'');
+    if(/quota|limit|neuron|billing|exceed/i.test(msg)){
+      return json({error:'خلص الحد المجاني لليوم. جرّب مرة ثانية باچر 🤍'},429);
+    }
+    return json({error:'صار خطأ أثناء توليد الصورة. جرّب مرة ثانية.'},500);
+  }
+}
+
+function bytesToBase64(bytes){
+  let s='';
+  const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk)s+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+  return btoa(s);
+}
+
+function json(body,status=200){
+  return new Response(JSON.stringify(body),{
+    status,
+    headers:{
+      'content-type':'application/json; charset=utf-8',
+      'cache-control':'no-store'
+    }
+  });
+}
