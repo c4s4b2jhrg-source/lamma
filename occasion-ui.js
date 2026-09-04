@@ -8,27 +8,23 @@
     'رمضان / عزيمة':{head:'تفاصيل العزيمة 🌙',sub:'اكتب عنوان ورسالة العزيمة.',title:'مثال: عزيمة رمضان 🌙',msg:'يسعدنا تشريفكم ولمّتكم معنا...',host:'اسم صاحب العزيمة',hostPlaceholder:'مثال: أبو محمد',place:'مثال: المنزل أو المجلس'},
     'مناسبة خاصة':{head:'تفاصيل المناسبة ✨',sub:'اكتب العنوان والرسالة.',title:'مثال: لمّتنا الخاصة ✨',msg:'يسعدنا حضوركم ومشاركتنا هذه المناسبة...',host:'اسم صاحب المناسبة',hostPlaceholder:'مثال: عائلة أحمد',place:'مثال: مكان المناسبة'}
   };
-
+  function selectedType(){
+    const q=new URLSearchParams(location.search).get('type');
+    if(q&&configs[q])return q;
+    try{const d=JSON.parse(localStorage.getItem('lammaInvite')||'{}');if(d.type&&configs[d.type])return d.type}catch{}
+    return 'مناسبة خاصة';
+  }
   function init(){
-    let d={};try{d=JSON.parse(localStorage.getItem('lammaInvite')||'{}')}catch{}
-    const cfg=configs[d.type]||configs['مناسبة خاصة'];
+    const type=selectedType();
+    try{const d=JSON.parse(localStorage.getItem('lammaInvite')||'{}');d.type=type;localStorage.setItem('lammaInvite',JSON.stringify(d))}catch{}
+    const cfg=configs[type];
     const panels=[...document.querySelectorAll('.panel')];
     const first=panels[0];
-    if(first){
-      const h=first.querySelector('.head h1'),p=first.querySelector('.head p');
-      if(h)h.textContent=cfg.head;
-      if(p)p.textContent=cfg.sub;
-    }
+    if(first){const h=first.querySelector('.head h1'),p=first.querySelector('.head p');if(h)h.textContent=cfg.head;if(p)p.textContent=cfg.sub}
     const title=document.getElementById('title');if(title)title.placeholder=cfg.title;
     const msg=document.getElementById('msg');if(msg)msg.placeholder=cfg.msg;
     const place=document.getElementById('place');if(place)place.placeholder=cfg.place;
-    const host=document.getElementById('host');
-    if(host){
-      host.placeholder=cfg.hostPlaceholder;
-      const label=host.previousElementSibling;
-      if(label&&label.tagName==='LABEL')label.textContent=cfg.host;
-    }
+    const host=document.getElementById('host');if(host){host.placeholder=cfg.hostPlaceholder;const label=host.previousElementSibling;if(label&&label.tagName==='LABEL')label.textContent=cfg.host}
   }
-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
