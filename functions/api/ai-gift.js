@@ -15,26 +15,39 @@ export async function onRequestPost(context){
     }
     if(!refs.length)return json({error:'ارفع صورة مرجعية أول.'},400);
     if(refs.some(f=>f.size>8*1024*1024))return json({error:'واحدة من الصور كبيرة جدًا. خلها أقل من 8MB.'},400);
+    if(['حب','صداقة'].includes(occasion)&&refs.length!==2)return json({error:'لهذي المناسبة لازم ترفع صورتين بالضبط، صورة لكل شخص.'},400);
+
     const scenePrompt=getScenePrompt(occasion,sceneKey);
     if(!scenePrompt)return json({error:'اختيار المشهد غير صحيح.'},400);
 
     const styleHint={
       'واقعي دافئ':'realistic professional photography, natural skin texture, soft warm light, restrained styling, no beauty-filter look',
       'سينمائي فاخر':'cinematic premium photography with realistic skin and restrained grading; preserve real facial appearance above cinematic stylization',
-      'ناعم حالم':'soft elegant photography while keeping the real face and skin structure unchanged',
-      'كرتوني لطيف':'gentle illustrated styling while keeping the person recognizably the same; do not redesign the face'
-    }[style]||style;
+      'ناعم حالم':'soft elegant photography while keeping the real face and skin structure unchanged'
+    }[style]||'realistic professional photography, natural skin texture, restrained styling';
 
-    const roleLines=refs.map((_,i)=>`Reference image ${i+1}: this is the identity source for person ${i+1}. Treat this face as locked identity reference.`).join('\n');
+    const isMultiPerson=['حب','صداقة'].includes(occasion);
+    const samePersonOccasions=['تخرج','عيد ميلاد','اعتذار','بدون مناسبة','مناسبة خاصة'];
 
-    const prompt=`Create a premium special-occasion image for a digital gift website.\n\nOCCASION:\n${occasion}\n\nSCENE:\n${scenePrompt}\n\nREFERENCE MAP:\n${roleLines}\n\nIDENTITY PRESERVATION — HIGHEST PRIORITY:\n- Keep each referenced person's face as close to the source image as possible.\n- Preserve facial geometry, eye shape and spacing, nose shape, lips, jawline, cheeks, eyebrows, hairstyle/hairline, skin tone, apparent age, and distinctive facial features.\n- Do NOT beautify, idealize, age up, age down, slim the face, enlarge eyes, change nose shape, change lip shape, change ethnicity, or merge faces.\n- Do NOT invent a new face. The face must remain recognizably the same person at first glance.\n- When there are multiple people, keep each identity separate and matched to its own reference. Never blend or swap faces.\n- If a requested pose would significantly distort or hide the face, choose a gentler version of the pose that keeps faces clear and recognizable.\n- Favor front-facing or three-quarter facial angles close to the references over extreme profile angles.\n- Change only the scene, pose, clothing, props, and background as needed. Identity must remain stable.\n\nCOMPOSITION:\n- ${scenePrompt}\n- Create a fresh composition, but keep the head orientation and facial expression reasonably close to the reference when that helps identity fidelity.\n- Everyone must be fully dressed in modest, neat, age-appropriate clothing.\n- Family-friendly only.\n- No text, no logos, no watermarks.\n- Natural anatomy, clean hands, realistic proportions.\n\nVISUAL STYLE:\n- ${styleHint}\n- invitation-quality image\n- polished composition\n\nSTRICTLY AVOID:\nidentity drift, face redesign, face swapping, blended identities, different eye shape, different nose, different jawline, different skin tone, different age, plastic-surgery look, beauty filter, excessive makeup, extreme profile view, distorted face, extra fingers, extra people, cropped heads, deformed anatomy.`;
+    const roleLines=refs.map((_,i)=>{
+      if(isMultiPerson)return `Reference image ${i+1}: DIFFERENT PERSON ${i+1}. Lock this person's identity to this specific reference only.`;
+      return `Reference image ${i+1}: SAME PERSON identity reference from another angle or moment. Use all references together to reconstruct one consistent identity.`;
+    }).join('\n');
+
+    const identityMode=isMultiPerson
+      ? `- There are exactly two different people. Reference 1 belongs only to person 1. Reference 2 belongs only to person 2.\n- Never merge, swap, average, or borrow facial features between them.\n- Keep both faces independently recognizable and stable.`
+      : samePersonOccasions.includes(occasion)
+        ? `- All uploaded references belong to the SAME person. Treat them as multiple identity views of one individual.\n- Fuse the identity evidence, not the faces: keep one consistent person, using the clearest shared facial traits across all references.\n- Never create multiple copies of the person unless the scene explicitly requires more than one person, which these scenes do not.`
+        : `- Preserve identity very strictly from the supplied reference images.`;
+
+    const prompt=`Create a premium special-occasion image for a digital gift website.\n\nOCCASION:\n${occasion}\n\nSCENE:\n${scenePrompt}\n\nREFERENCE MAP:\n${roleLines}\n\nIDENTITY MODE:\n${identityMode}\n\nIDENTITY PRESERVATION — HIGHEST PRIORITY:\n- Facial identity accuracy is more important than dramatic pose, styling, lighting, or background.\n- Keep facial geometry, eye shape and spacing, nose shape, lips, jawline, cheeks, eyebrows, hairstyle/hairline, skin tone, apparent age, and distinctive features as close to the references as possible.\n- Do NOT beautify, idealize, age up, age down, slim the face, enlarge eyes, change nose shape, change lip shape, change ethnicity, or apply a plastic-surgery look.\n- Do NOT invent a new face. The output must look like the same real person at first glance.\n- If a requested pose would hide or distort the face, use a gentler version that keeps identity readable.\n- Prefer front-facing or three-quarter angles close to the supplied references. Avoid extreme profiles.\n- Change only pose, clothing, props, scene, and background as needed. Identity must remain stable.\n\nCOMPOSITION:\n- ${scenePrompt}\n- Create a fresh composition, but keep head orientation and facial expression reasonably close to the references when that improves identity fidelity.\n- Everyone must be fully dressed in modest, neat, age-appropriate clothing.\n- Family-friendly only.\n- No text, no logos, no watermarks.\n- Natural anatomy, clean hands, realistic proportions.\n\nVISUAL STYLE:\n- ${styleHint}\n- invitation-quality image\n- polished composition\n\nSTRICTLY AVOID:\nidentity drift, face redesign, face swapping, blended identities, duplicated person, different eye shape, different nose, different jawline, different skin tone, different age, beauty filter, excessive makeup, extreme profile view, distorted face, extra fingers, extra people, cropped heads, deformed anatomy.`;
 
     const form=new FormData();
     form.append('prompt',prompt.trim());
     refs.forEach((file,i)=>form.append(`input_image_${i}`,file,file.name||`reference_${i+1}.jpg`));
     form.append('width','1024');
     form.append('height','1024');
-    form.append('guidance','4');
+    form.append('guidance','3.5');
 
     const serialized=new Response(form);
     const result=await context.env.AI.run('@cf/black-forest-labs/flux-2-klein-4b',{multipart:{body:serialized.body,contentType:serialized.headers.get('content-type')}});
@@ -72,7 +85,7 @@ function getScenePrompt(occasion,sceneKey){
     },
     'عيد ميلاد':{
       cake:'Create a birthday portrait featuring the person with a beautiful birthday cake while keeping the face clearly visible.',
-      balloons:'Create a birthday portrait with elegant balloons and the person's face clearly visible.',
+      balloons:'Create a birthday portrait with elegant balloons and the person\'s face clearly visible.',
       opening_gift:'Create a birthday portrait where the person is opening a gift while still keeping their face visible to camera.',
       blowing_candles:'Create a birthday scene with the person near the cake and candles, using a three-quarter angle that still preserves facial identity clearly.'
     },
@@ -104,7 +117,7 @@ function getScenePrompt(occasion,sceneKey){
       soft_portrait:'Create a polished elegant special-occasion portrait with strict identity preservation.',
       warm_pose:'Create a warm elegant pose suitable for a digital gift while keeping facial identity unchanged.',
       luxury_style:'Create a refined luxury-style celebratory portrait with restrained styling and accurate identity.',
-      dreamy_style:'Create a softly dreamy celebration portrait without changing the person's facial structure or identity.'
+      dreamy_style:'Create a softly dreamy celebration portrait without changing the person\'s facial structure or identity.'
     }
   };
   return map[occasion]?.[sceneKey]||null;
