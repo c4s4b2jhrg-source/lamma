@@ -17,20 +17,28 @@ export async function onRequestPost(context){
     if(refs.some(f=>f.size>8*1024*1024))return json({error:'واحدة من الصور كبيرة جدًا. خلها أقل من 8MB.'},400);
     const scenePrompt=getScenePrompt(occasion,sceneKey);
     if(!scenePrompt)return json({error:'اختيار المشهد غير صحيح.'},400);
+
     const styleHint={
-      'واقعي دافئ':'realistic professional photography, warm natural light, soft premium background',
-      'سينمائي فاخر':'cinematic luxury portrait, rich lighting, elegant depth, premium film look',
-      'ناعم حالم':'soft dreamy portrait, gentle tones, polished and elegant mood',
-      'كرتوني لطيف':'cute polished cartoon illustration, clean shapes, charming expressions'
+      'واقعي دافئ':'realistic professional photography, natural skin texture, soft warm light, restrained styling, no beauty-filter look',
+      'سينمائي فاخر':'cinematic premium photography with realistic skin and restrained grading; preserve real facial appearance above cinematic stylization',
+      'ناعم حالم':'soft elegant photography while keeping the real face and skin structure unchanged',
+      'كرتوني لطيف':'gentle illustrated styling while keeping the person recognizably the same; do not redesign the face'
     }[style]||style;
-    const roleLines=refs.map((_,i)=>`Reference image ${i+1}: preserve the identity of person ${i+1}.`).join('\n');
-    const prompt=`Create a premium special-occasion image for a digital gift website.\n\nOCCASION:\n${occasion}\n\nSCENE:\n${scenePrompt}\n\nREFERENCE MAP:\n${roleLines}\n\nRULES:\n- Preserve the recognizable identity of each referenced person.\n- If there are multiple reference images, treat them as different people unless the scene clearly implies the same person at different moments.\n- Create a fresh composition, not a copy of the source pose.\n- Make the result elegant, clean, gift-ready, and visually appealing.\n- Everyone must be fully dressed in modest, neat, age-appropriate clothing.\n- Family-friendly only.\n- No text, no logos, no watermarks.\n- Clean hands, clean faces, believable anatomy, natural expressions.\n- Avoid identity mixing, extra fingers, extra people, distorted faces, cropped heads, deformed bodies.\n\nVISUAL STYLE:\n- ${styleHint}\n- invitation-quality image\n- polished composition`;
+
+    const roleLines=refs.map((_,i)=>`Reference image ${i+1}: this is the identity source for person ${i+1}. Treat this face as locked identity reference.`).join('\n');
+
+    const prompt=`Create a premium special-occasion image for a digital gift website.\n\nOCCASION:\n${occasion}\n\nSCENE:\n${scenePrompt}\n\nREFERENCE MAP:\n${roleLines}\n\nIDENTITY PRESERVATION — HIGHEST PRIORITY:\n- Keep each referenced person's face as close to the source image as possible.\n- Preserve facial geometry, eye shape and spacing, nose shape, lips, jawline, cheeks, eyebrows, hairstyle/hairline, skin tone, apparent age, and distinctive facial features.\n- Do NOT beautify, idealize, age up, age down, slim the face, enlarge eyes, change nose shape, change lip shape, change ethnicity, or merge faces.\n- Do NOT invent a new face. The face must remain recognizably the same person at first glance.\n- When there are multiple people, keep each identity separate and matched to its own reference. Never blend or swap faces.\n- If a requested pose would significantly distort or hide the face, choose a gentler version of the pose that keeps faces clear and recognizable.\n- Favor front-facing or three-quarter facial angles close to the references over extreme profile angles.\n- Change only the scene, pose, clothing, props, and background as needed. Identity must remain stable.\n\nCOMPOSITION:\n- ${scenePrompt}\n- Create a fresh composition, but keep the head orientation and facial expression reasonably close to the reference when that helps identity fidelity.\n- Everyone must be fully dressed in modest, neat, age-appropriate clothing.\n- Family-friendly only.\n- No text, no logos, no watermarks.\n- Natural anatomy, clean hands, realistic proportions.\n\nVISUAL STYLE:\n- ${styleHint}\n- invitation-quality image\n- polished composition\n\nSTRICTLY AVOID:\nidentity drift, face redesign, face swapping, blended identities, different eye shape, different nose, different jawline, different skin tone, different age, plastic-surgery look, beauty filter, excessive makeup, extreme profile view, distorted face, extra fingers, extra people, cropped heads, deformed anatomy.`;
+
     const form=new FormData();
     form.append('prompt',prompt.trim());
     refs.forEach((file,i)=>form.append(`input_image_${i}`,file,file.name||`reference_${i+1}.jpg`));
-    form.append('width','1024');form.append('height','1024');form.append('guidance','5');
+    form.append('width','1024');
+    form.append('height','1024');
+    form.append('guidance','4');
+
     const serialized=new Response(form);
     const result=await context.env.AI.run('@cf/black-forest-labs/flux-2-klein-4b',{multipart:{body:serialized.body,contentType:serialized.headers.get('content-type')}});
+
     let b64='';
     if(result&&typeof result.image==='string')b64=result.image;
     else if(result instanceof ReadableStream){const bytes=new Uint8Array(await new Response(result).arrayBuffer());b64=bytesToBase64(bytes)}
@@ -57,46 +65,46 @@ function normalizeOccasion(raw){
 function getScenePrompt(occasion,sceneKey){
   const map={
     'حب':{
-      holding_hands:'Create a romantic couple scene where the two people are standing together and holding hands in a warm elegant setting.',
-      hug:'Create a tasteful romantic couple scene with a gentle warm hug, elegant and soft.',
-      looking_at_each_other:'Create a romantic scene where the two people are standing and looking at each other warmly.',
-      cozy_sitting:'Create a cozy romantic seated scene for two people with a calm elegant atmosphere.'
+      holding_hands:'Create a romantic couple scene where the two people are standing together and holding hands in a warm elegant setting, with both faces clearly visible.',
+      hug:'Create a tasteful gentle hug with both faces clearly visible and unobstructed; avoid hiding either face against the other person.',
+      looking_at_each_other:'Create a romantic scene where the two people look at each other softly while keeping both faces mostly visible in a three-quarter angle.',
+      cozy_sitting:'Create a cozy seated romantic scene with both people facing slightly toward camera so both identities remain clear.'
     },
     'عيد ميلاد':{
-      cake:'Create a birthday portrait featuring the person with a beautiful birthday cake.',
-      balloons:'Create a birthday portrait with elegant balloons and a celebratory mood.',
-      opening_gift:'Create a birthday portrait where the person is opening a gift happily.',
-      blowing_candles:'Create a birthday portrait where the person is blowing out birthday candles.'
+      cake:'Create a birthday portrait featuring the person with a beautiful birthday cake while keeping the face clearly visible.',
+      balloons:'Create a birthday portrait with elegant balloons and the person's face clearly visible.',
+      opening_gift:'Create a birthday portrait where the person is opening a gift while still keeping their face visible to camera.',
+      blowing_candles:'Create a birthday scene with the person near the cake and candles, using a three-quarter angle that still preserves facial identity clearly.'
     },
     'صداقة':{
-      side_by_side:'Create a warm friendship portrait with the friends standing side by side naturally.',
-      friendly_hug:'Create a cheerful tasteful friendship hug between the referenced friends.',
-      laughing:'Create a candid friendship scene where the friends are laughing together naturally.',
-      coffee:'Create a cozy friendship scene with the friends sitting together over coffee in a warm setting.'
+      side_by_side:'Create a warm friendship portrait with the friends standing side by side naturally, both faces clearly visible.',
+      friendly_hug:'Create a cheerful tasteful friendship hug with both faces visible and unobstructed.',
+      laughing:'Create a candid friendship scene where the friends are laughing together while keeping both faces recognizable and visible.',
+      coffee:'Create a cozy friendship scene with the friends sitting together over coffee, both facing slightly toward camera.'
     },
     'تخرج':{
-      cap_only:'Create a graduation portrait featuring the graduate wearing a graduation cap in a polished celebratory style.',
-      cap_diploma:'Create a graduation portrait featuring the graduate with a graduation cap and diploma.',
-      cap_cake:'Create a graduation celebration portrait with the graduate, a graduation cap, and a tasteful cake.',
-      toss_cap:'Create a dynamic graduation portrait where the graduate is joyfully tossing the graduation cap.'
+      cap_only:'Create a graduation portrait featuring the graduate wearing a graduation cap; do not let the cap hide the forehead, eyebrows, or face.',
+      cap_diploma:'Create a graduation portrait with cap and diploma while keeping the graduate facing camera or three-quarter view.',
+      cap_cake:'Create a graduation celebration portrait with cap and tasteful cake while keeping the face clearly visible.',
+      toss_cap:'Create a dynamic graduation portrait immediately before or after tossing the cap, keeping the face visible and recognizable rather than turning away.'
     },
     'اعتذار':{
-      flower_sorry:'Create a gentle apology-themed portrait with flowers and a soft emotional mood.',
-      sorry_card:'Create an apology-themed portrait with a tasteful apology-card detail but no readable text.',
-      calm_emotional:'Create a calm emotional portrait suitable for a sincere apology.',
-      soft_apology:'Create a soft elegant apology-themed portrait with warm tones.'
+      flower_sorry:'Create a gentle apology-themed portrait with flowers and a soft emotional mood while keeping the face clearly recognizable.',
+      sorry_card:'Create an apology-themed portrait with a tasteful apology-card detail but no readable text; keep the face clearly visible.',
+      calm_emotional:'Create a calm emotional portrait suitable for a sincere apology, preserving natural facial features exactly.',
+      soft_apology:'Create a soft elegant apology-themed portrait with warm tones and minimal facial stylization.'
     },
     'بدون مناسبة':{
-      surprise_gift:'Create a warm surprise-gift portrait with a tasteful wrapped gift and joyful mood.',
-      flowers:'Create a beautiful just-because portrait with flowers and a soft premium atmosphere.',
-      elegant_portrait:'Create a polished elegant portrait that feels like an unexpected thoughtful gift.',
-      cozy_moment:'Create a cozy warm candid moment suitable for a no-reason surprise gift.'
+      surprise_gift:'Create a warm surprise-gift portrait with a tasteful wrapped gift and a clear recognizable face.',
+      flowers:'Create a beautiful just-because portrait with flowers and a soft premium atmosphere, keeping the face unchanged.',
+      elegant_portrait:'Create a polished elegant portrait that feels like an unexpected thoughtful gift, prioritizing identity accuracy over stylization.',
+      cozy_moment:'Create a cozy warm candid moment suitable for a no-reason surprise gift while keeping the face clearly visible.'
     },
     'مناسبة خاصة':{
-      soft_portrait:'Create a polished elegant special-occasion portrait.',
-      warm_pose:'Create a warm elegant pose suitable for a digital gift.',
-      luxury_style:'Create a refined luxury-style celebratory portrait.',
-      dreamy_style:'Create a dreamy elegant celebration portrait.'
+      soft_portrait:'Create a polished elegant special-occasion portrait with strict identity preservation.',
+      warm_pose:'Create a warm elegant pose suitable for a digital gift while keeping facial identity unchanged.',
+      luxury_style:'Create a refined luxury-style celebratory portrait with restrained styling and accurate identity.',
+      dreamy_style:'Create a softly dreamy celebration portrait without changing the person's facial structure or identity.'
     }
   };
   return map[occasion]?.[sceneKey]||null;
