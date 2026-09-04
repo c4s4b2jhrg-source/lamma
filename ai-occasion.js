@@ -83,18 +83,11 @@
   }
 
   function fixDesktopPickers(){
-    const style=document.createElement('style');
-    style.id='desktopPickerFix';
-    style.textContent='@media (min-width:700px){.pickerWrap{height:68px;overflow:visible}.pickerNative{opacity:1!important;position:relative!important;inset:auto!important;z-index:3!important;height:68px!important;padding:0 18px!important;border:0!important;background:#fff!important;color:#251b17!important;-webkit-text-fill-color:#251b17!important;-webkit-appearance:auto!important;appearance:auto!important;cursor:pointer!important}.pickerText{display:none!important}.pickerNative::-webkit-calendar-picker-indicator{cursor:pointer;opacity:1;width:24px;height:24px}}';
-    if(!document.getElementById('desktopPickerFix'))document.head.appendChild(style);
-    ['date','time'].forEach(id=>{
-      const input=document.getElementById(id);if(!input)return;
-      const wrap=input.closest('.pickerWrap');
-      if(wrap&&!wrap.dataset.pickerFixed){
-        wrap.dataset.pickerFixed='1';
-        wrap.addEventListener('click',()=>{try{if(typeof input.showPicker==='function')input.showPicker();else input.focus()}catch{input.focus()}});
-      }
-    });
+    if(document.getElementById('desktopPickerFix'))return;
+    const style=document.createElement('style');style.id='desktopPickerFix';
+    style.textContent='@media (min-width:700px){.pickerWrap{height:auto!important;border:0!important;background:transparent!important;overflow:visible!important}.pickerText{display:none!important}.pickerNative{position:static!important;inset:auto!important;width:100%!important;height:62px!important;opacity:1!important;z-index:auto!important;cursor:pointer!important;border:1.5px solid #ddcfc5!important;background:#fff!important;padding:0 17px!important;border-radius:18px!important;color:#251b17!important;-webkit-text-fill-color:#251b17!important;-webkit-appearance:auto!important;appearance:auto!important}.pickerNative::-webkit-calendar-picker-indicator{display:block!important;opacity:1!important;cursor:pointer!important;width:24px!important;height:24px!important}}';
+    document.head.appendChild(style);
+    ['date','time'].forEach(id=>{const input=document.getElementById(id);if(!input)return;input.addEventListener('click',()=>{try{input.showPicker?.()}catch{}})});
   }
 
   function buildUploads(aiMode,cfg){
