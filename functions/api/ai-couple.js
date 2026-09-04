@@ -25,21 +25,24 @@ export async function onRequestPost(context){
     }
 
     const styleHint={
-      'واقعي دافئ':'realistic professional photography, warm natural light, premium soft background',
-      'طفولي ناعم':'soft dreamy portrait, pastel tones, gentle warm mood',
-      'سينمائي فاخر':'cinematic high-end portrait, elegant lighting, premium film look',
-      'رسوم كرتونية لطيفة':'cute polished cartoon illustration, soft clean shapes, charming expressions'
+      'واقعي دافئ':'realistic professional photography, natural skin texture, warm natural light, premium soft background, restrained styling',
+      'طفولي ناعم':'soft dreamy photography with realistic facial identity, pastel tones, gentle warm mood',
+      'سينمائي فاخر':'cinematic high-end photography while preserving the real face above all stylization',
+      'رسوم كرتونية لطيفة':'gentle illustrated styling while keeping the person recognizably the same; do not redesign the face'
     }[style]||style;
 
+    const samePersonRoles=new Set(['graduate_current','graduate_secondary','graduate_third','birthday_current','birthday_secondary','birthday_third']);
     const roleDescriptions={
-      groom_current:'current adult groom identity reference',
-      bride_current:'current adult bride identity reference',
+      groom_current:'current adult groom — unique person A',
+      bride_current:'current adult bride — unique person B',
       groom_child:'childhood reference of the SAME groom',
       bride_child:'childhood reference of the SAME bride',
-      graduate_current:'current identity reference of the graduate',
-      graduate_child:'childhood reference of the SAME graduate',
-      birthday_current:'current identity reference of the birthday person',
-      birthday_child:'childhood reference of the SAME birthday person',
+      graduate_current:'primary current identity reference of the graduate',
+      graduate_secondary:'second angle/reference of the SAME graduate',
+      graduate_third:'third angle/reference of the SAME graduate',
+      birthday_current:'primary current identity reference of the birthday person',
+      birthday_secondary:'second angle/reference of the SAME birthday person',
+      birthday_third:'third angle/reference of the SAME birthday person',
       parent_primary:'primary parent identity reference',
       newborn:'newborn identity reference, only if this image is provided',
       parent_secondary:'second parent identity reference',
@@ -48,29 +51,29 @@ export async function onRequestPost(context){
       primary:'primary identity reference',
       secondary:'second identity reference'
     };
-    const roleText=refs.map((x,i)=>`Input image ${i}: ${roleDescriptions[x.role]||x.role}.`).join('\n');
+    const roleText=refs.map((x,i)=>`Input image ${i+1}: ${roleDescriptions[x.role]||x.role}.`).join('\n');
 
-    const hasChildhood=roleSet.has('groom_child')||roleSet.has('bride_child')||roleSet.has('graduate_child')||roleSet.has('birthday_child');
+    const samePersonRefCount=refs.filter(x=>samePersonRoles.has(x.role)).length;
     const hasNewborn=roleSet.has('newborn');
 
     const occasionHint={
-      'زواج':`Create an elegant Gulf wedding image using the groom and bride current references. Dress both in complete, modest, premium wedding/formal clothing. Selected idea: ${scene}. ${hasChildhood?'Childhood references are also supplied; only use them if the selected idea calls for a childhood-and-present composition. Never turn the adults into children unless the chosen scene explicitly asks for childhood and present together.':''}`,
-      'ملكة / عقد قران':`Create a refined engagement / nikah image using the current groom and bride references. Use modest elegant Gulf formal attire and a tasteful setting. Selected idea: ${scene}. ${hasChildhood?'Childhood references are supplied for an optional then-and-now composition only.':''}`,
-      'تخرج':`Create a graduation portrait of the referenced graduate. Selected idea: ${scene}. Use a complete graduation gown, cap and/or diploma when appropriate. ${hasChildhood?'A childhood image of the SAME person is supplied; use it only when the selected idea is childhood and present together.':''}`,
-      'عيد ميلاد':`Create a birthday portrait of the referenced birthday person. Selected idea: ${scene}. Add tasteful cake, balloons or celebration decor when appropriate. ${hasChildhood?'A childhood image of the SAME person is supplied; use it only for a tasteful then-and-now idea when appropriate.':''}`,
-      'مولود / عقيقة':`Create a warm newborn / aqiqah invitation image. Selected idea: ${scene}. ${hasNewborn?'A real newborn reference is supplied, so preserve the newborn identity carefully.':'No newborn reference is supplied; if the scene includes a baby, create a generic newborn without implying a specific facial identity.'} Preserve any supplied parent identities.`,
-      'رمضان / عزيمة':`Create a warm Gulf Ramadan gathering / invitation portrait using the supplied person references. Selected idea: ${scene}. Use modest traditional or elegant clothing, tasteful majlis or dining details, lanterns and warm lighting when appropriate.`,
-      'مناسبة خاصة':`Create a polished special-occasion portrait using the supplied references. Selected idea: ${scene}. Keep it elegant, warm and invitation-ready.`
+      'زواج':`Create an elegant Gulf wedding image using the groom and bride references. Selected idea: ${scene}. Keep both identities separate and clearly recognizable.`,
+      'ملكة / عقد قران':`Create a refined engagement / nikah image using the current groom and bride references. Selected idea: ${scene}. Keep both identities separate and clearly recognizable.`,
+      'تخرج':`Create a graduation portrait of the referenced graduate. Selected idea: ${scene}. ${samePersonRefCount>1?'Multiple images are references of the SAME graduate from different angles. Combine them only to improve identity accuracy; do not create extra people.':''}`,
+      'عيد ميلاد':`Create a birthday portrait of the referenced birthday person. Selected idea: ${scene}. ${samePersonRefCount>1?'Multiple images are references of the SAME birthday person from different angles. Combine them only to improve identity accuracy; do not create extra people.':''}`,
+      'مولود / عقيقة':`Create a warm newborn / aqiqah image. Selected idea: ${scene}. ${hasNewborn?'Preserve the newborn identity carefully.':'If no newborn reference is supplied, create a generic newborn without implying a specific identity.'}`,
+      'رمضان / عزيمة':`Create a warm Gulf Ramadan gathering portrait using the supplied references. Selected idea: ${scene}.`,
+      'مناسبة خاصة':`Create a polished special-occasion portrait using the supplied references. Selected idea: ${scene}.`
     }[occasion]||`Create a polished special-occasion portrait. Selected idea: ${scene}.`;
 
-    const prompt=`${occasionHint}\n\nREFERENCE MAP:\n${roleText}\n\nIDENTITY RULES:\n- Match each input only to its stated role.\n- Preserve recognizable facial identity, hairstyle and key facial features as faithfully as possible.\n- Do not mix identities between adults, children, parents or newborns.\n- Create a fresh three-quarter or full-body composition rather than copying the source pose.\n\nCLOTHING AND SAFETY:\n- Everyone must be fully dressed in neat, modest, age-appropriate clothing.\n- No shirtless or bare-chested person.\n- No revealing clothing.\n- Family-friendly and suitable for a Gulf digital invitation.\n\nVISUAL STYLE:\n- ${styleHint}.\n- Premium invitation-quality composition.\n- Natural skin, believable anatomy, clean hands, coherent lighting and gentle expressions.\n\nSTRICTLY AVOID: identity mixing, wrong age, awkward pose, extra fingers, extra hands, duplicated people, unintended extra people, distorted faces, deformed anatomy, cropped heads, scary expressions, text, logos, watermarks.`;
+    const prompt=`${occasionHint}\n\nREFERENCE MAP:\n${roleText}\n\nIDENTITY PRESERVATION — HIGHEST PRIORITY:\n- Preserve each person's real facial identity as closely as possible.\n- Keep face shape, eye shape and spacing, eyebrows, nose, lips, jawline, cheeks, skin tone, hairstyle/hairline, apparent age, and distinctive features consistent with the references.\n- Do not beautify, idealize, slim the face, enlarge eyes, reshape nose or lips, change age, change skin tone, or invent a new face.\n- If multiple images belong to the same person, treat them as multiple angles of ONE identity and never generate duplicate people from them.\n- If the scene contains two different people, never mix, blend, swap, or average their faces.\n- Prefer front-facing or three-quarter angles. Avoid extreme profile views if they reduce likeness.\n- If a pose would hide or distort a face, use a gentler version that keeps the face visible.\n- Change only pose, clothes, props, scene, and background as needed. Identity fidelity is more important than dramatic composition.\n\nCLOTHING AND SAFETY:\n- Everyone must be fully dressed in neat, modest, age-appropriate clothing.\n- No shirtless or bare-chested person.\n- No revealing clothing.\n- Family-friendly and suitable for a Gulf digital invitation.\n\nVISUAL STYLE:\n- ${styleHint}.\n- Premium invitation-quality composition.\n- Natural skin, believable anatomy, clean hands, coherent lighting and gentle expressions.\n\nSTRICTLY AVOID:\nidentity drift, face redesign, face swapping, blended identities, duplicate people from multiple reference angles, wrong age, beauty-filter look, distorted faces, extra fingers, extra hands, duplicated people, unintended extra people, cropped heads, text, logos, watermarks.`;
 
     const form=new FormData();
     form.append('prompt',prompt);
     refs.forEach((x,i)=>form.append('input_image_'+i,x.file,x.file.name||('reference'+(i+1)+'.jpg')));
     form.append('width','1024');
     form.append('height','1024');
-    form.append('guidance','5');
+    form.append('guidance','4');
 
     const serialized=new Response(form);
     const result=await context.env.AI.run('@cf/black-forest-labs/flux-2-klein-4b',{
