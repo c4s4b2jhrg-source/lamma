@@ -2,71 +2,73 @@
   const configs={
     'زواج':{
       title:'صورتكم بالـ AI 🤍',
-      desc:'ارفع الصور المناسبة لكم. الصورتان الحاليتان أساسيتان، وصور الطفولة اختيارية.',
+      desc:'ارفع صور العريس والعروس، وبعدها اختر واحد من 4 مشاهد خاصة بالزواج.',
       uploads:[
         {label:'صورة العريس الحالية',role:'groom_current',required:true},
         {label:'صورة العروس الحالية',role:'bride_current',required:true},
         {label:'صورة العريس وهو صغير',role:'groom_child',required:false},
         {label:'صورة العروس وهي صغيرة',role:'bride_child',required:false}
       ],
-      scenes:['لقطة زفاف أنيقة','يمسكون يد بعض','طفولة وحاضر في لقطة واحدة','جلسة رسمية فخمة']
+      scenes:['وقفة زفاف رسمية','مسكة يد رومانسية','تبادل خواتم','بوكيه ولقطة ناعمة']
     },
     'ملكة / عقد قران':{
       title:'صورتكم بالـ AI 💍',
-      desc:'ارفع صورة الخطيب والخطيبة، وتقدر تضيف صور طفولتهم إذا تبي لقطة طفولة وحاضر.',
+      desc:'ارفع صورة الخطيب والخطيبة، وبعدها اختر واحد من 4 مشاهد خاصة بالملكة.',
       uploads:[
         {label:'صورة الخطيب الحالية',role:'groom_current',required:true},
         {label:'صورة الخطيبة الحالية',role:'bride_current',required:true},
         {label:'صورة الخطيب وهو صغير',role:'groom_child',required:false},
         {label:'صورة الخطيبة وهي صغيرة',role:'bride_child',required:false}
       ],
-      scenes:['طابع عقد قران راقٍ','يمسكون يد بعض','طفولة وحاضر في لقطة واحدة','جلسة خطوبة أنيقة']
+      scenes:['وقفة ملكة راقية','يمسكون يد بعض','لقطة خواتم','جلسة خطوبة أنيقة']
     },
     'تخرج':{
       title:'صورة التخرج بالـ AI 🎓',
-      desc:'الصورة الحالية أساسية، وصورة الطفولة اختيارية إذا تبي لقطة صغيرة وكبير.',
+      desc:'ارفع صورة الخريج، وبعدها اختر واحد من 4 مشاهد خاصة بالتخرج.',
       uploads:[
         {label:'صورة الخريج / الخريجة الحالية',role:'graduate_current',required:true},
-        {label:'صورته / صورتها وهو صغير',role:'graduate_child',required:false}
+        {label:'صورة ثانية لنفس الشخص — اختياري',role:'graduate_secondary',required:false},
+        {label:'صورة ثالثة لنفس الشخص — اختياري',role:'graduate_third',required:false}
       ],
-      scenes:['لابس روب التخرج وماسك الشهادة','قبعة تخرج وأجواء احتفالية','طفولة وحاضر في لقطة واحدة','جلسة تخرج سينمائية']
+      scenes:['قبعة التخرج فقط','قبعة + شهادة','قبعة + كيكة','رمي القبعة']
     },
     'عيد ميلاد':{
       title:'صورة عيد الميلاد بالـ AI 🎂',
-      desc:'ارفع الصورة الحالية، وإذا تبي أضف صورة وهو صغير عشان نسوي فكرة طفولة وحاضر.',
+      desc:'ارفع صورة صاحب عيد الميلاد، وبعدها اختر واحد من 4 مشاهد خاصة بعيد الميلاد.',
       uploads:[
         {label:'الصورة الحالية لصاحب عيد الميلاد',role:'birthday_current',required:true},
-        {label:'صورته وهو صغير',role:'birthday_child',required:false}
+        {label:'صورة ثانية لنفس الشخص — اختياري',role:'birthday_secondary',required:false},
+        {label:'صورة ثالثة لنفس الشخص — اختياري',role:'birthday_third',required:false}
       ],
-      scenes:['مع كيك وبالونات','حفلة عيد ميلاد فخمة','طفولة وحاضر في لقطة واحدة','لقطة احتفالية ناعمة']
+      scenes:['مع كيكة','مع بالونات','يفتح هدية','ينفخ الشموع']
     },
     'مولود / عقيقة':{
       title:'صورة المولود بالـ AI 👶🏻',
-      desc:'إذا المولود موجود ارفع صورته، وإذا للحين جاي يكفي صورة أحد الوالدين ونولد مشهد استقبال مولود.',
+      desc:'اختر واحد من 4 مشاهد خاصة بالمولود والعقيقة.',
       uploads:[
         {label:'صورة الأم أو الأب',role:'parent_primary',required:true},
         {label:'صورة المولود — إذا موجود',role:'newborn',required:false},
         {label:'صورة الوالد الثاني — اختياري',role:'parent_secondary',required:false}
       ],
-      scenes:['المولود جاي — استقبال ناعم','يحمل المولود بين يديه','المولود في سرير أنيق','عقيقة بطابع خليجي هادئ']
+      scenes:['المولود لحاله','الأم مع المولود','الأب والأم مع المولود','ستايل عقيقة خليجي']
     },
     'رمضان / عزيمة':{
       title:'صورتك بالـ AI 🌙',
-      desc:'ارفع صورة صاحب المناسبة، وتقدر تضيف شخص ثاني إذا تبي.',
+      desc:'ارفع صورة صاحب المناسبة، وبعدها اختر واحد من 4 مشاهد رمضانية.',
       uploads:[
         {label:'صورة صاحب المناسبة',role:'host_primary',required:true},
         {label:'صورة شخص ثاني — اختياري',role:'host_secondary',required:false}
       ],
-      scenes:['مجلس رمضاني فاخر','سفرة عزيمة أنيقة','جلسة خليجية رمضانية','فوانيس وإضاءة دافئة']
+      scenes:['سفرة رمضانية','مع فانوس','قهوة وتمور','جلسة عائلية رمضانية']
     },
     'مناسبة خاصة':{
       title:'صورتك بالـ AI ✨',
-      desc:'ارفع الصورة الأساسية، وتقدر تضيف صورة ثانية إذا المناسبة فيها شخصين.',
+      desc:'ارفع الصورة الأساسية، وبعدها اختر واحد من 4 ستايلات جاهزة.',
       uploads:[
         {label:'الصورة الأساسية',role:'primary',required:true},
         {label:'صورة ثانية — اختياري',role:'secondary',required:false}
       ],
-      scenes:['واقعي وأنيق','سينمائي فاخر','لطيف وناعم','احتفالي']
+      scenes:['هدية مفاجأة','ورد','بورتريه فاخر','لحظة عفوية']
     }
   };
 
@@ -76,7 +78,7 @@
   function addStyles(){
     if(document.getElementById('occasionAiStyles'))return;
     const s=document.createElement('style');s.id='occasionAiStyles';
-    s.textContent='.occasionUploads{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.occasionUpload{position:relative;min-height:132px;border:1.5px dashed #c99f8e;border-radius:16px;background:#fff;display:grid;place-items:center;text-align:center;overflow:hidden;padding:8px;color:#5f4c43}.occasionUpload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:3}.occasionUpload img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}.occasionUpload .uploadText{position:relative;z-index:1;font-size:13px;line-height:1.5}.occasionUpload .req{display:block;color:#a34f3b;font-size:11px;margin-top:4px}.occasionUpload .opt{display:block;color:#917c71;font-size:11px;margin-top:4px}.occasionCount{margin-top:9px;color:#8a756a;font-size:12px;text-align:center}.occasionSceneGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.occasionScene{min-height:48px;border-radius:13px;border:1px solid #ddcfc5;background:#fff;padding:8px;font:inherit;font-size:13px;font-weight:800;color:#5f4c43}.occasionScene.on{border:2px solid #b66a45;background:#fff0e8;color:#8e4e31}@media(max-width:380px){.occasionUploads{grid-template-columns:1fr 1fr;gap:7px}.occasionUpload{min-height:120px}.occasionSceneGrid{grid-template-columns:1fr}}';
+    s.textContent='.occasionUploads{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.occasionUpload{position:relative;min-height:132px;border:1.5px dashed #c99f8e;border-radius:16px;background:#fff;display:grid;place-items:center;text-align:center;overflow:hidden;padding:8px;color:#5f4c43}.occasionUpload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:3}.occasionUpload img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}.occasionUpload .uploadText{position:relative;z-index:1;font-size:13px;line-height:1.5}.occasionUpload .req{display:block;color:#a34f3b;font-size:11px;margin-top:4px}.occasionUpload .opt{display:block;color:#917c71;font-size:11px;margin-top:4px}.occasionCount{margin-top:9px;color:#8a756a;font-size:12px;text-align:center}.occasionSceneGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.occasionScene{min-height:58px;border-radius:14px;border:1px solid #ddcfc5;background:#fff;padding:10px;font:inherit;font-size:13px;font-weight:800;color:#5f4c43}.occasionScene.on{border:2px solid #b66a45;background:#fff0e8;color:#8e4e31}.occasionHint{margin-top:10px;padding:10px 12px;border-radius:13px;background:#fff8f4;color:#76594b;font-size:12px;line-height:1.65;border:1px solid #eaded5}@media(max-width:380px){.occasionUploads{grid-template-columns:1fr 1fr;gap:7px}.occasionUpload{min-height:120px}.occasionSceneGrid{grid-template-columns:1fr 1fr}.occasionScene{font-size:12px;padding:8px}}';
     document.head.appendChild(s);
   }
 
@@ -98,7 +100,7 @@
   function buildScenes(aiMode,cfg,d){
     let box=document.getElementById('occasionScenes');
     if(!box){box=document.createElement('div');box.id='occasionScenes';box.style.marginTop='14px';const consent=aiMode.querySelector('.consent');aiMode.insertBefore(box,consent||null)}
-    box.innerHTML='<div style="font-size:14px;font-weight:900;margin-bottom:8px">اختر فكرة الصورة</div><div id="occasionSceneGrid" class="occasionSceneGrid"></div>';
+    box.innerHTML='<div style="font-size:14px;font-weight:900;margin-bottom:8px">اختر شكل الصورة — 4 خيارات</div><div id="occasionSceneGrid" class="occasionSceneGrid"></div>';
     const grid=box.querySelector('#occasionSceneGrid');
     const saved=d.aiScene&&cfg.scenes.includes(d.aiScene)?d.aiScene:cfg.scenes[0];
     cfg.scenes.forEach(scene=>{const b=document.createElement('button');b.type='button';b.className='occasionScene'+(scene===saved?' on':'');b.textContent=scene;b.onclick=()=>{grid.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');setDraft({aiScene:scene})};grid.appendChild(b)});
@@ -114,7 +116,9 @@
     buildUploads(aiMode,cfg);buildScenes(aiMode,cfg,d);
 
     const oldHint=document.getElementById('occasionAiHint');if(oldHint)oldHint.remove();
-    const hint=document.createElement('div');hint.id='occasionAiHint';hint.style.cssText='margin-top:10px;padding:10px 12px;border-radius:13px;background:#fff8f4;color:#76594b;font-size:12px;line-height:1.65;border:1px solid #eaded5';hint.textContent='الخانات المكتوب عليها «مطلوبة» لازم ترفعها. الباقي اختياري حسب فكرة الصورة.';document.getElementById('occasionScenes').insertAdjacentElement('afterend',hint);
+    const hint=document.createElement('div');hint.id='occasionAiHint';hint.className='occasionHint';
+    hint.textContent=(type==='زواج'||type==='ملكة / عقد قران')?'ارفع صورتين واضحتين للوجه، صورة لكل شخص. هذا يساعد على تثبيت الوجوه.':'إذا رفعت أكثر من صورة لنفس الشخص، النظام يستخدمها كزوايا إضافية لتثبيت الوجه.';
+    document.getElementById('occasionScenes').insertAdjacentElement('afterend',hint);
 
     window.generateAI=async function(){
       const inputs=cfg.uploads.map((u,i)=>({u,file:document.getElementById('occasionFile'+i)?.files?.[0]}));
