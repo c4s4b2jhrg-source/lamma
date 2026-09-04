@@ -46,13 +46,11 @@ export async function onRequestPost(context){
 function normalizeOccasion(raw){
   const v=String(raw||'').trim();
   if(/حب|رومان|love/i.test(v))return 'حب';
+  if(/صديق|صداقة|friend/i.test(v))return 'صداقة';
   if(/تخرج|graduate|graduation/i.test(v))return 'تخرج';
   if(/ميلاد|birthday/i.test(v))return 'عيد ميلاد';
-  if(/زواج|ملكة|عقد|nikah|wedding|engagement/i.test(v))return 'زواج / ملكة';
-  if(/مولود|عقيق|newborn|baby/i.test(v))return 'مولود / عقيقة';
-  if(/رمضان|عزيمة|iftar|ramadan/i.test(v))return 'رمضان / عزيمة';
-  if(/شكر|thanks/i.test(v))return 'شكر';
   if(/اعتذار|sorry|apology/i.test(v))return 'اعتذار';
+  if(/بدون مناسبة|surprise|مفاجأة/i.test(v))return 'بدون مناسبة';
   return 'مناسبة خاصة';
 }
 
@@ -64,47 +62,35 @@ function getScenePrompt(occasion,sceneKey){
       looking_at_each_other:'Create a romantic scene where the two people are standing and looking at each other warmly.',
       cozy_sitting:'Create a cozy romantic seated scene for two people with a calm elegant atmosphere.'
     },
-    'تخرج':{
-      cap_only:'Create a graduation portrait featuring the graduate wearing a graduation cap in a polished celebratory style.',
-      cap_diploma:'Create a graduation portrait featuring the graduate with a graduation cap and diploma.',
-      cap_cake:'Create a graduation celebration portrait with the graduate, a graduation cap, and a tasteful cake.',
-      toss_cap:'Create a dynamic graduation portrait where the graduate is joyfully tossing the graduation cap.'
-    },
     'عيد ميلاد':{
       cake:'Create a birthday portrait featuring the person with a beautiful birthday cake.',
       balloons:'Create a birthday portrait with elegant balloons and a celebratory mood.',
       opening_gift:'Create a birthday portrait where the person is opening a gift happily.',
       blowing_candles:'Create a birthday portrait where the person is blowing out birthday candles.'
     },
-    'زواج / ملكة':{
-      formal_pose:'Create an elegant wedding or engagement portrait with a refined formal pose.',
-      holding_hands:'Create an elegant wedding or engagement portrait where the couple are gently holding hands.',
-      rings:'Create an elegant wedding or engagement portrait highlighting a tasteful ring exchange moment.',
-      bouquet:'Create an elegant soft portrait with bouquet details and a romantic luxury atmosphere.'
+    'صداقة':{
+      side_by_side:'Create a warm friendship portrait with the friends standing side by side naturally.',
+      friendly_hug:'Create a cheerful tasteful friendship hug between the referenced friends.',
+      laughing:'Create a candid friendship scene where the friends are laughing together naturally.',
+      coffee:'Create a cozy friendship scene with the friends sitting together over coffee in a warm setting.'
     },
-    'مولود / عقيقة':{
-      newborn_only:'Create a warm newborn celebration image focusing on the baby in a soft elegant style.',
-      mother_baby:'Create a warm mother and newborn portrait for a newborn celebration.',
-      parents_baby:'Create a warm family portrait with parents and the newborn in a gentle elegant setting.',
-      aqiqah_style:'Create a polished aqiqah-style newborn celebration portrait with soft festive details.'
-    },
-    'رمضان / عزيمة':{
-      table:'Create a warm Ramadan gathering scene with a tasteful iftar table and elegant atmosphere.',
-      lantern:'Create a Ramadan portrait scene with beautiful lantern details and warm lighting.',
-      coffee_dates:'Create a warm Ramadan scene with Arabic coffee and dates in an elegant presentation.',
-      family_session:'Create a cozy family Ramadan gathering scene with a refined atmosphere.'
-    },
-    'شكر':{
-      flowers:'Create a soft appreciation portrait with flowers and a thankful elegant mood.',
-      thank_you_card:'Create an appreciation portrait with a tasteful thank-you card detail.',
-      formal_soft:'Create a polished soft formal appreciation portrait.',
-      minimal_gratitude:'Create a minimal elegant gratitude-themed portrait.'
+    'تخرج':{
+      cap_only:'Create a graduation portrait featuring the graduate wearing a graduation cap in a polished celebratory style.',
+      cap_diploma:'Create a graduation portrait featuring the graduate with a graduation cap and diploma.',
+      cap_cake:'Create a graduation celebration portrait with the graduate, a graduation cap, and a tasteful cake.',
+      toss_cap:'Create a dynamic graduation portrait where the graduate is joyfully tossing the graduation cap.'
     },
     'اعتذار':{
       flower_sorry:'Create a gentle apology-themed portrait with flowers and a soft emotional mood.',
-      sorry_card:'Create an apology-themed portrait with a tasteful sorry-card detail.',
+      sorry_card:'Create an apology-themed portrait with a tasteful apology-card detail but no readable text.',
       calm_emotional:'Create a calm emotional portrait suitable for a sincere apology.',
       soft_apology:'Create a soft elegant apology-themed portrait with warm tones.'
+    },
+    'بدون مناسبة':{
+      surprise_gift:'Create a warm surprise-gift portrait with a tasteful wrapped gift and joyful mood.',
+      flowers:'Create a beautiful just-because portrait with flowers and a soft premium atmosphere.',
+      elegant_portrait:'Create a polished elegant portrait that feels like an unexpected thoughtful gift.',
+      cozy_moment:'Create a cozy warm candid moment suitable for a no-reason surprise gift.'
     },
     'مناسبة خاصة':{
       soft_portrait:'Create a polished elegant special-occasion portrait.',
