@@ -2,145 +2,134 @@
   const configs={
     'زواج':{
       title:'صورتكم بالـ AI 🤍',
-      desc:'ارفع صورة العريس وصورة العروس، واختر شكل المشهد اللي تبيه.',
-      first:'صورة العريس',second:'صورة العروس',secondRequired:true,
-      scenes:['لقطة زفاف أنيقة','يمسكون يد بعض','جلسة رسمية فخمة','لقطة رومانسية ناعمة']
+      desc:'ارفع الصور المناسبة لكم. الصورتان الحاليتان أساسيتان، وصور الطفولة اختيارية.',
+      uploads:[
+        {label:'صورة العريس الحالية',role:'groom_current',required:true},
+        {label:'صورة العروس الحالية',role:'bride_current',required:true},
+        {label:'صورة العريس وهو صغير',role:'groom_child',required:false},
+        {label:'صورة العروس وهي صغيرة',role:'bride_child',required:false}
+      ],
+      scenes:['لقطة زفاف أنيقة','يمسكون يد بعض','طفولة وحاضر في لقطة واحدة','جلسة رسمية فخمة']
     },
     'ملكة / عقد قران':{
       title:'صورتكم بالـ AI 💍',
-      desc:'ارفع صورة الخطيب وصورة الخطيبة، وبنولد لكم لقطة تناسب الملكة أو عقد القران.',
-      first:'صورة الخطيب',second:'صورة الخطيبة',secondRequired:true,
-      scenes:['طابع عقد قران راقٍ','جلسة خطوبة أنيقة','يمسكون يد بعض','لقطة ناعمة ورسمية']
+      desc:'ارفع صورة الخطيب والخطيبة، وتقدر تضيف صور طفولتهم إذا تبي لقطة طفولة وحاضر.',
+      uploads:[
+        {label:'صورة الخطيب الحالية',role:'groom_current',required:true},
+        {label:'صورة الخطيبة الحالية',role:'bride_current',required:true},
+        {label:'صورة الخطيب وهو صغير',role:'groom_child',required:false},
+        {label:'صورة الخطيبة وهي صغيرة',role:'bride_child',required:false}
+      ],
+      scenes:['طابع عقد قران راقٍ','يمسكون يد بعض','طفولة وحاضر في لقطة واحدة','جلسة خطوبة أنيقة']
     },
     'تخرج':{
       title:'صورة التخرج بالـ AI 🎓',
-      desc:'ارفع صورة الخريج الحالية، وإذا تبي أضف صورة وهو صغير عشان نسوي لقطة طفولة وحاضر.',
-      first:'صورة الخريج الحالية',second:'صورة وهو صغير (اختياري)',secondRequired:false,
-      scenes:['لابس روب التخرج وماسك الشهادة','قبعة تخرج في أجواء احتفالية','طفولة وحاضر في لقطة واحدة','جلسة تخرج سينمائية']
+      desc:'الصورة الحالية أساسية، وصورة الطفولة اختيارية إذا تبي لقطة صغيرة وكبير.',
+      uploads:[
+        {label:'صورة الخريج / الخريجة الحالية',role:'graduate_current',required:true},
+        {label:'صورته / صورتها وهو صغير',role:'graduate_child',required:false}
+      ],
+      scenes:['لابس روب التخرج وماسك الشهادة','قبعة تخرج وأجواء احتفالية','طفولة وحاضر في لقطة واحدة','جلسة تخرج سينمائية']
     },
     'عيد ميلاد':{
       title:'صورة عيد الميلاد بالـ AI 🎂',
-      desc:'ارفع صورته الحالية، وإذا تبي أضف صورة وهو صغير. بنولد الصورة حسب أجواء عيد الميلاد.',
-      first:'صورته الحالية',second:'صورته وهو صغير (اختياري)',secondRequired:false,
+      desc:'ارفع الصورة الحالية، وإذا تبي أضف صورة وهو صغير عشان نسوي فكرة طفولة وحاضر.',
+      uploads:[
+        {label:'الصورة الحالية لصاحب عيد الميلاد',role:'birthday_current',required:true},
+        {label:'صورته وهو صغير',role:'birthday_child',required:false}
+      ],
       scenes:['مع كيك وبالونات','حفلة عيد ميلاد فخمة','طفولة وحاضر في لقطة واحدة','لقطة احتفالية ناعمة']
     },
     'مولود / عقيقة':{
       title:'صورة المولود بالـ AI 👶🏻',
-      desc:'ارفع صورة الأم أو الأب، وإذا عندك صورة للمولود أضفها. وإذا المولود للحين ما وصل، نولد مشهد استقبال مولود لطيف.',
-      first:'صورة الأم أو الأب',second:'صورة المولود (اختياري)',secondRequired:false,
-      scenes:['يحمل المولود بين يديه','استقبال مولود بأجواء ناعمة','المولود في سرير أنيق','عقيقة بطابع خليجي هادئ']
+      desc:'إذا المولود موجود ارفع صورته، وإذا للحين جاي يكفي صورة أحد الوالدين ونولد مشهد استقبال مولود.',
+      uploads:[
+        {label:'صورة الأم أو الأب',role:'parent_primary',required:true},
+        {label:'صورة المولود — إذا موجود',role:'newborn',required:false},
+        {label:'صورة الوالد الثاني — اختياري',role:'parent_secondary',required:false}
+      ],
+      scenes:['المولود جاي — استقبال ناعم','يحمل المولود بين يديه','المولود في سرير أنيق','عقيقة بطابع خليجي هادئ']
     },
     'رمضان / عزيمة':{
       title:'صورتك بالـ AI 🌙',
-      desc:'ارفع صورة صاحب المناسبة، وتقدر تضيف صورة ثانية اختيارية. بنولد أجواء رمضانية أو عزيمة مرتبة.',
-      first:'صورة صاحب المناسبة',second:'صورة ثانية (اختياري)',secondRequired:false,
+      desc:'ارفع صورة صاحب المناسبة، وتقدر تضيف شخص ثاني إذا تبي.',
+      uploads:[
+        {label:'صورة صاحب المناسبة',role:'host_primary',required:true},
+        {label:'صورة شخص ثاني — اختياري',role:'host_secondary',required:false}
+      ],
       scenes:['مجلس رمضاني فاخر','سفرة عزيمة أنيقة','جلسة خليجية رمضانية','فوانيس وإضاءة دافئة']
     },
     'مناسبة خاصة':{
       title:'صورتك بالـ AI ✨',
-      desc:'ارفع الصورة الأساسية، وتقدر تضيف صورة ثانية اختيارية. بعدها اختر المشهد المناسب لك.',
-      first:'الصورة الأساسية',second:'صورة ثانية (اختياري)',secondRequired:false,
+      desc:'ارفع الصورة الأساسية، وتقدر تضيف صورة ثانية إذا المناسبة فيها شخصين.',
+      uploads:[
+        {label:'الصورة الأساسية',role:'primary',required:true},
+        {label:'صورة ثانية — اختياري',role:'secondary',required:false}
+      ],
       scenes:['واقعي وأنيق','سينمائي فاخر','لطيف وناعم','احتفالي']
     }
   };
 
-  function getDraft(){
-    try{return JSON.parse(localStorage.getItem('lammaInvite')||'{}')}catch{return {}}
+  function getDraft(){try{return JSON.parse(localStorage.getItem('lammaInvite')||'{}')}catch{return {}}}
+  function setDraft(patch){const d={...getDraft(),...patch};try{localStorage.setItem('lammaInvite',JSON.stringify(d))}catch{};try{Object.assign(draft,patch)}catch{};return d}
+
+  function addStyles(){
+    if(document.getElementById('occasionAiStyles'))return;
+    const s=document.createElement('style');s.id='occasionAiStyles';
+    s.textContent='.occasionUploads{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.occasionUpload{position:relative;min-height:132px;border:1.5px dashed #c99f8e;border-radius:16px;background:#fff;display:grid;place-items:center;text-align:center;overflow:hidden;padding:8px;color:#5f4c43}.occasionUpload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:3}.occasionUpload img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}.occasionUpload .uploadText{position:relative;z-index:1;font-size:13px;line-height:1.5}.occasionUpload .req{display:block;color:#a34f3b;font-size:11px;margin-top:4px}.occasionUpload .opt{display:block;color:#917c71;font-size:11px;margin-top:4px}.occasionCount{margin-top:9px;color:#8a756a;font-size:12px;text-align:center}.occasionSceneGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.occasionScene{min-height:48px;border-radius:13px;border:1px solid #ddcfc5;background:#fff;padding:8px;font:inherit;font-size:13px;font-weight:800;color:#5f4c43}.occasionScene.on{border:2px solid #b66a45;background:#fff0e8;color:#8e4e31}@media(max-width:380px){.occasionUploads{grid-template-columns:1fr 1fr;gap:7px}.occasionUpload{min-height:120px}.occasionSceneGrid{grid-template-columns:1fr}}';
+    document.head.appendChild(s);
   }
-  function setDraft(patch){
-    const d={...getDraft(),...patch};
-    try{localStorage.setItem('lammaInvite',JSON.stringify(d))}catch{}
-    return d;
+
+  function buildUploads(aiMode,cfg){
+    const old=aiMode.querySelector('.uploadgrid');if(!old)return;
+    old.className='occasionUploads';old.innerHTML='';
+    cfg.uploads.forEach((u,i)=>{
+      const label=document.createElement('label');label.className='occasionUpload';
+      label.innerHTML='<div class="uploadText">📷<br><b>'+u.label+'</b><span class="'+(u.required?'req':'opt')+'">'+(u.required?'مطلوبة':'اختيارية')+'</span></div><img id="occasionPreview'+i+'"><input id="occasionFile'+i+'" type="file" accept="image/*">';
+      const input=label.querySelector('input'),img=label.querySelector('img'),txt=label.querySelector('.uploadText');
+      input.addEventListener('change',()=>{const f=input.files?.[0];if(!f)return;img.src=URL.createObjectURL(f);img.style.display='block';txt.style.opacity='0'});
+      old.appendChild(label);
+    });
+    let count=document.getElementById('occasionCount');if(!count){count=document.createElement('div');count.id='occasionCount';count.className='occasionCount';old.insertAdjacentElement('afterend',count)}
+    const required=cfg.uploads.filter(x=>x.required).length,optional=cfg.uploads.length-required;
+    count.textContent='الصور المطلوبة: '+required+(optional?' • اختيارية: '+optional:'');
+  }
+
+  function buildScenes(aiMode,cfg,d){
+    let box=document.getElementById('occasionScenes');
+    if(!box){box=document.createElement('div');box.id='occasionScenes';box.style.marginTop='14px';const consent=aiMode.querySelector('.consent');aiMode.insertBefore(box,consent||null)}
+    box.innerHTML='<div style="font-size:14px;font-weight:900;margin-bottom:8px">اختر فكرة الصورة</div><div id="occasionSceneGrid" class="occasionSceneGrid"></div>';
+    const grid=box.querySelector('#occasionSceneGrid');
+    const saved=d.aiScene&&cfg.scenes.includes(d.aiScene)?d.aiScene:cfg.scenes[0];
+    cfg.scenes.forEach(scene=>{const b=document.createElement('button');b.type='button';b.className='occasionScene'+(scene===saved?' on':'');b.textContent=scene;b.onclick=()=>{grid.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');setDraft({aiScene:scene})};grid.appendChild(b)});
+    setDraft({aiScene:saved});
   }
 
   function init(){
-    const d=getDraft();
-    const type=d.type||'مناسبة خاصة';
-    const cfg=configs[type]||configs['مناسبة خاصة'];
-    const aiMode=document.getElementById('aiMode');
-    if(!aiMode)return;
+    addStyles();
+    const d=getDraft(),type=d.type||'مناسبة خاصة',cfg=configs[type]||configs['مناسبة خاصة'];
+    const aiMode=document.getElementById('aiMode');if(!aiMode)return;
+    const panel=aiMode.closest('.panel'),headTitle=panel?.querySelector('.head h1'),headDesc=panel?.querySelector('.head p'),aiTitle=aiMode.querySelector('.aiTitle h2');
+    if(headTitle)headTitle.textContent=cfg.title;if(headDesc)headDesc.textContent=cfg.desc;if(aiTitle)aiTitle.textContent=cfg.title.replace(/\s*[🤍💍🎓🎂👶🏻🌙✨]+$/u,'');
+    buildUploads(aiMode,cfg);buildScenes(aiMode,cfg,d);
 
-    const panel=aiMode.closest('.panel');
-    const headTitle=panel?.querySelector('.head h1');
-    const headDesc=panel?.querySelector('.head p');
-    const aiTitle=aiMode.querySelector('.aiTitle h2');
-    if(headTitle)headTitle.textContent=cfg.title;
-    if(headDesc)headDesc.textContent=cfg.desc;
-    if(aiTitle)aiTitle.textContent=cfg.title.replace(/\s*[🤍💍🎓🎂👶🏻🌙✨]+$/u,'');
-
-    const boyText=document.getElementById('boyText');
-    const girlText=document.getElementById('girlText');
-    if(boyText)boyText.innerHTML='📷<br><b>'+cfg.first+'</b>';
-    if(girlText)girlText.innerHTML='📷<br><b>'+cfg.second+'</b>';
-
-    let sceneBox=document.getElementById('occasionScenes');
-    if(!sceneBox){
-      sceneBox=document.createElement('div');
-      sceneBox.id='occasionScenes';
-      sceneBox.style.marginTop='12px';
-      sceneBox.innerHTML='<div style="font-size:14px;font-weight:900;margin-bottom:8px">اختر المشهد</div><div id="occasionSceneGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>';
-      const consent=aiMode.querySelector('.consent');
-      aiMode.insertBefore(sceneBox,consent||null);
-    }
-
-    const grid=document.getElementById('occasionSceneGrid');
-    const saved=d.aiScene&&cfg.scenes.includes(d.aiScene)?d.aiScene:cfg.scenes[0];
-    grid.innerHTML='';
-    cfg.scenes.forEach((scene,i)=>{
-      const b=document.createElement('button');
-      b.type='button';
-      b.textContent=scene;
-      b.dataset.scene=scene;
-      b.style.cssText='min-height:48px;border-radius:13px;border:1px solid #ddcfc5;background:#fff;padding:8px;font:inherit;font-size:13px;font-weight:800;color:#5f4c43';
-      if(scene===saved){b.style.border='2px solid #b66a45';b.style.background='#fff0e8'}
-      b.onclick=()=>{
-        [...grid.children].forEach(x=>{x.style.border='1px solid #ddcfc5';x.style.background='#fff'});
-        b.style.border='2px solid #b66a45';b.style.background='#fff0e8';
-        setDraft({aiScene:scene});
-      };
-      grid.appendChild(b);
-    });
-    setDraft({aiScene:saved});
-
-    const hint=document.createElement('div');
-    hint.id='occasionAiHint';
-    hint.style.cssText='margin-top:10px;padding:10px 12px;border-radius:13px;background:#fff8f4;color:#76594b;font-size:12px;line-height:1.65;border:1px solid #eaded5';
-    hint.textContent=cfg.secondRequired?'لازم ترفع الصورتين عشان نحافظ على ملامح الشخصين.':'الصورة الثانية اختيارية — تقدر تولد بالصورة الأساسية فقط.';
-    const old=document.getElementById('occasionAiHint');if(old)old.remove();
-    sceneBox.insertAdjacentElement('afterend',hint);
+    const oldHint=document.getElementById('occasionAiHint');if(oldHint)oldHint.remove();
+    const hint=document.createElement('div');hint.id='occasionAiHint';hint.style.cssText='margin-top:10px;padding:10px 12px;border-radius:13px;background:#fff8f4;color:#76594b;font-size:12px;line-height:1.65;border:1px solid #eaded5';hint.textContent='الخانات المكتوب عليها «مطلوبة» لازم ترفعها. الباقي اختياري حسب فكرة الصورة.';document.getElementById('occasionScenes').insertAdjacentElement('afterend',hint);
 
     window.generateAI=async function(){
-      const a=document.getElementById('boyPhoto')?.files?.[0];
-      const b=document.getElementById('girlPhoto')?.files?.[0];
-      if(!a)return alert('ارفع '+cfg.first+' أول');
-      if(cfg.secondRequired&&!b)return alert('ارفع '+cfg.second+' بعد');
+      const inputs=cfg.uploads.map((u,i)=>({u,file:document.getElementById('occasionFile'+i)?.files?.[0]}));
+      const missing=inputs.find(x=>x.u.required&&!x.file);if(missing)return alert('ارفع '+missing.u.label+' أول');
       if(!document.getElementById('consent')?.checked)return alert('أكد الإذن باستخدام الصور');
-
-      const btn=document.getElementById('aiBtn');
-      const result=document.getElementById('aiResult');
-      const msg=document.getElementById('aiMsg');
+      const files=inputs.filter(x=>x.file);const btn=document.getElementById('aiBtn'),result=document.getElementById('aiResult'),msg=document.getElementById('aiMsg');
       btn.disabled=true;btn.textContent='جاري التوليد...';msg.textContent='';
       try{
-        const fd=new FormData();
-        fd.append('image1',a);
-        if(b)fd.append('image2',b);
-        fd.append('style',document.querySelector('input[name=aistyle]:checked')?.value||'واقعي دافئ');
-        fd.append('occasion',type);
-        fd.append('scene',getDraft().aiScene||cfg.scenes[0]);
-        const r=await fetch('/api/ai-couple',{method:'POST',body:fd});
-        const j=await r.json();
-        if(!r.ok||!j.image)throw new Error(j.error||'تعذر التوليد');
-        let raw=j.image.startsWith('data:')?j.image:'data:image/png;base64,'+j.image;
-        let data=typeof window.compressDataUrl==='function'?await window.compressDataUrl(raw):raw;
-        const now=setDraft({aiImage:data,storySource:'ai',aiScene:getDraft().aiScene||cfg.scenes[0]});
-        if(typeof window.draft==='object'){window.draft.aiImage=data;window.draft.storySource='ai';window.draft.aiScene=now.aiScene}
-        const img=document.getElementById('aiImage');img.src=data;
-        result.style.display='block';msg.textContent='تمت الصورة 🤍';
-      }catch(e){
-        result.style.display='block';msg.textContent=e.message||'تعذر التوليد';
-      }finally{
-        btn.disabled=false;btn.textContent='✨ توليد الصورة';
-      }
+        const fd=new FormData();files.forEach((x,i)=>{fd.append('image'+(i+1),x.file);fd.append('role'+(i+1),x.u.role)});
+        fd.append('style',document.querySelector('input[name=aistyle]:checked')?.value||'واقعي دافئ');fd.append('occasion',type);fd.append('scene',getDraft().aiScene||cfg.scenes[0]);fd.append('imageCount',String(files.length));
+        const r=await fetch('/api/ai-couple',{method:'POST',body:fd}),j=await r.json();if(!r.ok||!j.image)throw new Error(j.error||'تعذر التوليد');
+        const raw=j.image.startsWith('data:')?j.image:'data:image/png;base64,'+j.image;const data=typeof compressDataUrl==='function'?await compressDataUrl(raw):raw;
+        setDraft({aiImage:data,storySource:'ai',aiScene:getDraft().aiScene||cfg.scenes[0]});
+        const img=document.getElementById('aiImage');img.src=data;result.style.display='block';msg.textContent='تمت الصورة 🤍';
+      }catch(e){result.style.display='block';msg.textContent=e.message||'تعذر التوليد'}finally{btn.disabled=false;btn.textContent='✨ توليد الصورة'}
     };
   }
 
