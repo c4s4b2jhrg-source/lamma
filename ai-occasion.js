@@ -82,6 +82,21 @@
     document.head.appendChild(s);
   }
 
+  function fixDesktopPickers(){
+    const style=document.createElement('style');
+    style.id='desktopPickerFix';
+    style.textContent='@media (min-width:700px){.pickerWrap{height:68px;overflow:visible}.pickerNative{opacity:1!important;position:relative!important;inset:auto!important;z-index:3!important;height:68px!important;padding:0 18px!important;border:0!important;background:#fff!important;color:#251b17!important;-webkit-text-fill-color:#251b17!important;-webkit-appearance:auto!important;appearance:auto!important;cursor:pointer!important}.pickerText{display:none!important}.pickerNative::-webkit-calendar-picker-indicator{cursor:pointer;opacity:1;width:24px;height:24px}}';
+    if(!document.getElementById('desktopPickerFix'))document.head.appendChild(style);
+    ['date','time'].forEach(id=>{
+      const input=document.getElementById(id);if(!input)return;
+      const wrap=input.closest('.pickerWrap');
+      if(wrap&&!wrap.dataset.pickerFixed){
+        wrap.dataset.pickerFixed='1';
+        wrap.addEventListener('click',()=>{try{if(typeof input.showPicker==='function')input.showPicker();else input.focus()}catch{input.focus()}});
+      }
+    });
+  }
+
   function buildUploads(aiMode,cfg){
     const old=aiMode.querySelector('.uploadgrid');if(!old)return;
     old.className='occasionUploads';old.innerHTML='';
@@ -108,7 +123,7 @@
   }
 
   function init(){
-    addStyles();
+    addStyles();fixDesktopPickers();
     const d=getDraft(),type=d.type||'مناسبة خاصة',cfg=configs[type]||configs['مناسبة خاصة'];
     const aiMode=document.getElementById('aiMode');if(!aiMode)return;
     const panel=aiMode.closest('.panel'),headTitle=panel?.querySelector('.head h1'),headDesc=panel?.querySelector('.head p'),aiTitle=aiMode.querySelector('.aiTitle h2');
