@@ -1,5 +1,5 @@
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json;charset=UTF-8','cache-control':'no-store'}});
-const ADMIN_HASH='7e36c67f6c8507b243bac18baadea54dfefcea580eff91a84fb317e9e8ab1324';
+const ADMIN_HASH='9552e277ebcc7fa191292c6e900d94dfe6e837d8abf76a2da927d4530d2c8f69';
 const clean=s=>String(s||'').trim();
 async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function auth(request){const key=request.headers.get('x-lamma-admin')||new URL(request.url).searchParams.get('key')||'';return (await sha256(key))===ADMIN_HASH}
